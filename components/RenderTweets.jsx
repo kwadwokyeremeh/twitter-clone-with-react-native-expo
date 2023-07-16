@@ -1,37 +1,68 @@
-import {View, SafeAreaView, FlatList, Text, Button, StyleSheet, Image, TouchableOpacity, Platform} from 'react-native';
+import {useEffect, useState} from "react";
+import {View, SafeAreaView, FlatList, Text, Button, StyleSheet, Image, TouchableOpacity, Platform, ActivityIndicator} from 'react-native';
 import { EvilIcons, AntDesign } from '@expo/vector-icons';
 import styles from '../css/styleSheet';
+import axios from '../axios'
+import {formatDistanceToNowStrict} from 'date-fns'
 
 export default function RenderTweets({HeaderComponent,navigation}){
+    const [data, setData] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    
+    useEffect(() => {
+        return async () => {
+              await getAllTweets();
+        };
+    }, []);
+
+
+    async function getAllTweets(){
+        await axios.get('api/tweets')
+            .then(response => {
+                setData(response.data)
+                setIsLoading(false);
+                setIsRefreshing(false);
+            }).catch(error => {
+                console.log(error);
+                setIsLoading(false);
+                setIsRefreshing(false);
+        })
+    }
+    function handleRefresh(){
+      setIsRefreshing(true);
+      getAllTweets();
+    }
+
     function goToProfile(){
         navigation.navigate('Profile Screen');
     }
 
-    function goToSingleTweet(){
+    function goToSingleTweet({id}){
         navigation.navigate('Tweet Screen');
     }
 
     function goToNewTweet(){
         navigation.navigate('New Tweet Screen');
     }
-    const renderTweet = ({item}) => (
+    const renderTweet = ({item:tweet}) => (
         <View style={styles.tweetContainer}>
             <TouchableOpacity onPress={()=>{goToProfile()}}>
                 <Image 
                     style={styles.avatar}
                     source={{
-                        uri: 'https://reactnative.dev/img/tiny_logo.png'
+                        uri: tweet.user.avatar
                     }} />
             </TouchableOpacity>
             <View style={{flex:1}}>
                 <TouchableOpacity  onPress={()=>{goToProfile()}} style={styles.flexRow}>
-                    <Text numberOfLines={1} style={styles.username}>{item.title}</Text>
-                    <Text numberOfLines={1} style={styles.userHandle}>@user handle</Text>
+                    <Text numberOfLines={1} style={styles.username}>{tweet.user.name}</Text>
+                    <Text numberOfLines={1} style={styles.userHandle}>@{tweet.user.username}</Text>
                     <Text>&middot;</Text>
-                    <Text numberOfLines={1} style={styles.publishDate}>11m</Text>
+                    <Text numberOfLines={1} style={styles.publishDate}>{formatDistanceToNowStrict(new Date(tweet.created_at))}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.tweetContentContainer} onPress={()=>goToSingleTweet()}>
-                    <Text style={styles.tweetContent}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Est sed accusamus facilis doloremque molestias officiis quidem delectus excepturi eos temporibus, id quae! Non reprehenderit itaque fugiat labore ducimus totam repudiandae.</Text>
+                <TouchableOpacity style={styles.tweetContentContainer} onPress={()=>goToSingleTweet(tweet.id)}>
+                    <Text style={styles.tweetContent}>{tweet.body}</Text>
                 </TouchableOpacity>
                 <View style={[styles.tweetEngagement, styles.spaceAround]}>
                     <TouchableOpacity style={[styles.flexRow, styles.ml4]}>
@@ -56,18 +87,27 @@ export default function RenderTweets({HeaderComponent,navigation}){
         </View>
     );
     return (
-        <FlatList
-                data={DATA}
+      <View style={styles.container}>
+        {isLoading?
+        (<ActivityIndicator size="large" color="gray"/>)
+        :
+        (
+          <FlatList
+                data={data}
                 renderItem={renderTweet}
                 keyExtractor={item => item.id}
                 ItemSeparatorComponent={()=> <View style={styles.tweetSeparator}></View>}
                 ListHeaderComponent={HeaderComponent}
+                refreshing={isRefreshing}
+                onRefresh={handleRefresh}
             />
+        )}
+      </View>
     );
 }
 
 
-const DATA = [
+const Data = [
     {
       id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
       title: 'First Item',

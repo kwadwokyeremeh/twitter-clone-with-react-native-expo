@@ -50,7 +50,7 @@ export default function HomeScreenQ({navigation}){
                         <Text style={styles.textGray}>1,245</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.flexRow, styles.ml4]}>
-                    <EvilIcons name={Platform.OS == 'ios' ? 'share-apple' : 'share-google'} size={22} color='gray' style={{marginRight: 3}} />
+                    <EvilIcons name={Platform.OS === 'ios' ? 'share-apple' : 'share-google'} size={22} color='gray' style={{marginRight: 3}} />
                     </TouchableOpacity>
                     
                 </View>

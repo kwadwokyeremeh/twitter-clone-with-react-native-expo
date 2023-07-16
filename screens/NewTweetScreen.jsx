@@ -5,11 +5,16 @@ import styleSheet from '../css/styleSheet';
 
 export default function NewTweetScreen({navigation}){
 const [tweet, setTweet] = useState('');
+function goToHome(){
+    //navigation.navigate('Tab');
+}
     return (
         <View style={styleSheet.container}>
             <View style={[styles.tweetButtonContainer, styleSheet.flexRow]}>
                 <Text style={[tweet.length > 250 ? styles.textRed:styleSheet.textGray, styles.characterLabel]}>Character left: {280 - tweet.length}</Text>
-                <TouchableOpacity style={styles.tweetButton}>
+                <TouchableOpacity 
+                    style={styles.tweetButton}
+                    onPress={goToHome()}>
                         <Text style={styles.tweetButtonLabel}>Tweet</Text>
                 </TouchableOpacity>
             </View>

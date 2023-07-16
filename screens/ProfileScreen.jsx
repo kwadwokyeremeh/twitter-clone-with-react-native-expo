@@ -1,10 +1,28 @@
 import { NavigationContainer } from '@react-navigation/native';
-import React from 'react';
+import {React,useState, useEffect} from 'react';
 import {View, Text, Image, TouchableOpacity, StyleSheet,Linking,SafeAreaView,FlatList, Button} from 'react-native';
 import styleSheet from '../css/styleSheet';
 import { EvilIcons, AntDesign } from "@expo/vector-icons";
+import axios from '../axios';
 
 export default function ProfileScreen({navigation}){
+    const [data, setData] = useState([]);
+    useEffect(() => {
+        return () => {
+             getAllTweets();
+        };
+    }, []);
+
+
+    async function getAllTweets(){
+        await axios.get('/api/tweets')
+            .then(response => {
+                console.log(response.data)
+                setData(response.data)
+            }).catch(error => {
+                console.log(error);
+        })
+    }
     function goToProfile(){
         navigation.navigate('Profile Screen');
     }
@@ -121,7 +139,7 @@ export default function ProfileScreen({navigation}){
         
          <SafeAreaView style={styleSheet.container}>
          <FlatList
-             data={DATA}
+             data={data}
              renderItem={renderTweet}
              keyExtractor={item => item.id}
              ItemSeparatorComponent={()=> <View style={styleSheet.tweetSeparator}></View>}
