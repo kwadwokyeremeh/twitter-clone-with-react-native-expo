@@ -9,20 +9,30 @@ export default function RenderTweets({HeaderComponent,navigation}){
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [page, setPage] = useState(1);
+    const [isAtEndOfScrolling, setIsAtEndOfScrolling] = useState(false);
     
     useEffect(() => {
         return async () => {
               await getAllTweets();
         };
-    }, []);
+    }, [page]);
 
 
     async function getAllTweets(){
-        await axios.get('api/tweets')
+        await axios.get(`api/tweets?page=${page}`)
             .then(response => {
-                setData(response.data)
-                setIsLoading(false);
-                setIsRefreshing(false);
+              if(page ===1){
+                  setData(response.data.data);
+              }else{
+                setData([...data, ...response.data.data]);
+              }
+
+              if(!response.data.next_page_url){
+                setIsAtEndOfScrolling(true);
+              }
+              setIsLoading(false);
+              setIsRefreshing(false);
             }).catch(error => {
                 console.log(error);
                 setIsLoading(false);
@@ -30,8 +40,16 @@ export default function RenderTweets({HeaderComponent,navigation}){
         })
     }
     function handleRefresh(){
+      setPage(1);
+      setIsAtEndOfScrolling(false);
       setIsRefreshing(true);
       getAllTweets();
+    }
+
+    function handleEnd(){
+      console.log("At end of flat list");
+      setPage(page +1);
+    
     }
 
     function goToProfile(){
@@ -89,7 +107,7 @@ export default function RenderTweets({HeaderComponent,navigation}){
     return (
       <View style={styles.container}>
         {isLoading?
-        (<ActivityIndicator size="large" color="gray"/>)
+        (<ActivityIndicator style={{marginTop:8}} size="large" color="gray"/>)
         :
         (
           <FlatList
@@ -100,72 +118,11 @@ export default function RenderTweets({HeaderComponent,navigation}){
                 ListHeaderComponent={HeaderComponent}
                 refreshing={isRefreshing}
                 onRefresh={handleRefresh}
+                onEndReached={handleEnd}
+                onEndReachedThreshold={0}
+                ListFooterComponent={()=> !isAtEndOfScrolling && (<ActivityIndicator size="large" color="gray"/>)}
             />
         )}
       </View>
     );
 }
-
-
-const Data = [
-    {
-      id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-      title: 'First Item',
-    },
-    {
-      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-      title: 'Second Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-    {
-        id: 'bd7acbea-c1b1-46c2-aed5-3ad53afbb28ba',
-        title: 'First Item',
-      },
-      {
-        id: '3ac68afc-c605-48d3-a4f8-fbd9w1aa97f63',
-        title: 'Second Item',
-      },
-      {
-        id: '58694a0f-3da1-471f-bd96-1w45571e29d72',
-        title: 'Third Item',
-      },
-      {
-        id: 'bd7acbea-c1b1-46c2-aed5-3ad53abbv28ba',
-        title: 'First Item',
-      },
-      {
-        id: '3ac68afc-c605-48d3-a4f8-fbd9lv1aa97f63',
-        title: 'Second Item',
-      },
-      {
-        id: '58694la0f-3da1-471f-bd96-145571e2w9d72',
-        title: 'Third Item',
-      },
-      {
-        id: 'bd7acbmea-c1b1-46c2-aed5-3ad5a3abb28ba',
-        title: 'First Item',
-      },
-      {
-        id: '3ac6p8afc-c605-48d3-a4f8-fbd91aa97f63',
-        title: 'Second Item',
-      },
-      {
-        id: '58694a0f-3daa1-471f-bd96-145571ge29d72',
-        title: 'Third Item',
-      },
-      {
-        id: 'bd7acbea-c1bq1-46c2-aed5-3ad53abb2g8ba',
-        title: 'First Item',
-      },
-      {
-        id: '3ac68qafc-c605-48d3-a4f8-fbd91ara97f63',
-        title: 'Second Item',
-      },
-      {
-        id: '58694a0f-3da1-471f-bdq96-145571e2h9d72',
-        title: 'Third Item',
-      },
-  ];
