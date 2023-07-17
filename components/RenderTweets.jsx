@@ -11,6 +11,7 @@ export default function RenderTweets({HeaderComponent,navigation}){
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [page, setPage] = useState(1);
     const [isAtEndOfScrolling, setIsAtEndOfScrolling] = useState(false);
+
     
     useEffect(() => {
         return async () => {
@@ -47,17 +48,17 @@ export default function RenderTweets({HeaderComponent,navigation}){
     }
 
     function handleEnd(){
-      console.log("At end of flat list");
-      setPage(page +1);
-    
+        setPage(page +1);
     }
 
     function goToProfile(){
         navigation.navigate('Profile Screen');
     }
 
-    function goToSingleTweet({id}){
-        navigation.navigate('Tweet Screen');
+    function goToSingleTweet(tweetId){
+        navigation.navigate('Tweet Screen',{
+            tweetId: tweetId,
+        });
     }
 
     function goToNewTweet(){
@@ -106,7 +107,7 @@ export default function RenderTweets({HeaderComponent,navigation}){
     );
     return (
       <View style={styles.container}>
-        {isLoading?
+        {isLoading ?
         (<ActivityIndicator style={{marginTop:8}} size="large" color="gray"/>)
         :
         (
