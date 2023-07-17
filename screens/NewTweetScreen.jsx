@@ -1,22 +1,50 @@
 import { NavigationContainer } from '@react-navigation/native';
 import {React, useState} from 'react';
-import {View, Text, Button, StyleSheet, TouchableOpacity, Image, TextInput} from 'react-native';
+import {View, Text, Button, StyleSheet, TouchableOpacity, Image, TextInput, ActivityIndicator} from 'react-native';
 import styleSheet from '../css/styleSheet';
+import axios from '../axios';
 
 export default function NewTweetScreen({navigation}){
 const [tweet, setTweet] = useState('');
-function goToHome(){
-    //navigation.navigate('Tab');
+const [isLoading, setIsLoading] = useState(false);
+
+function postTweet(){
+    if(tweet.length < 1){
+        return;
+    };
+    setIsLoading(true);
+    axios.post(`tweets`,{
+        body: tweet
+    })
+    .then(response=>{
+        navigation.navigate('Home1',{
+            newTweetAdded: response.data,
+        });
+        setIsLoading(false);
+    })
+    .catch(error => {
+        console.log(error)
+        setIsLoading(false);
+    })
 }
+
     return (
         <View style={styleSheet.container}>
             <View style={[styles.tweetButtonContainer, styleSheet.flexRow]}>
                 <Text style={[tweet.length > 250 ? styles.textRed:styleSheet.textGray, styles.characterLabel]}>Character left: {280 - tweet.length}</Text>
-                <TouchableOpacity 
-                    style={styles.tweetButton}
-                    onPress={goToHome()}>
-                        <Text style={styles.tweetButtonLabel}>Tweet</Text>
-                </TouchableOpacity>
+                <View style={[styleSheet.flexRow, styles.alignItem]}>
+                 {isLoading &&
+                    <ActivityIndicator size="small" color="gray" style={{marginRight:8}}/>
+                 }
+                    
+                    <TouchableOpacity
+                        style={isLoading || tweet.length <1 ? styles.disabledTweetButton : styles.tweetButton}
+                        disabled={isLoading || tweet.length <1}
+                        onPress={()=>(postTweet())}>
+                            <Text style={styles.tweetButtonLabel}>Tweet</Text>
+                    </TouchableOpacity>
+                </View>
+                
             </View>
             <View style={styles.tweetBoxContainer}>
                 <Image
@@ -55,6 +83,15 @@ const styles = StyleSheet.create({
         marginTop:4
 
     },
+    disabledTweetButton: {
+        backgroundColor: 'gray',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 24,
+        marginLeft:16,
+        marginTop:4
+
+    },
     characterLabel:{
         alignItems:'center',
         paddingBottom:6
@@ -78,5 +115,9 @@ const styles = StyleSheet.create({
     }, 
     ml4: {
         marginLeft:16
+    },
+    alignItem: {
+        alignItems:'center'
     }
+
 })

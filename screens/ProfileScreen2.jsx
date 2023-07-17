@@ -4,7 +4,7 @@ import { EvilIcons, AntDesign } from '@expo/vector-icons';
 import RenderTweets from "../components/RenderTweets";
 import styleSheet from '../css/styleSheet';
 
-export default function ProfileScreen({navigation}){
+export default function ProfileScreen({route, navigation}){
     function goToNewTweet(){
         navigation.navigate('New Tweet Screen');
     }
@@ -70,7 +70,7 @@ export default function ProfileScreen({navigation}){
 
     return (
         <SafeAreaView style={styleSheet.container}>
-            <RenderTweets HeaderComponent={ProfileHeader} navigation={navigation}/>
+            <RenderTweets HeaderComponent={ProfileHeader} route={route} navigation={navigation}/>
             <TouchableOpacity
                 style={styleSheet.floatingButton}
                 onPress={()=> goToNewTweet()}>

@@ -12,14 +12,12 @@ export default function TweetScreen({route, navigation}){
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        return async () => {
-              await getTweet();
-        };
+        getTweet();
     }, []);
 
 
-    async function getTweet(){
-        await axios.get(`api/tweets/${route.params.tweetId}`)
+    function getTweet(){
+        axios.get(`tweets/${route.params.tweetId}`)
                 .then(response => {
                     setTweet(response.data);
                     setIsLoading(false);

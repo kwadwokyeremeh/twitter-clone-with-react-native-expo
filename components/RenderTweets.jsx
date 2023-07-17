@@ -1,27 +1,38 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {View, SafeAreaView, FlatList, Text, Button, StyleSheet, Image, TouchableOpacity, Platform, ActivityIndicator} from 'react-native';
 import { EvilIcons, AntDesign } from '@expo/vector-icons';
 import styles from '../css/styleSheet';
 import axios from '../axios'
 import {formatDistanceToNowStrict} from 'date-fns'
 
-export default function RenderTweets({HeaderComponent,navigation}){
+export default function RenderTweets({HeaderComponent, route, navigation}){
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [page, setPage] = useState(1);
     const [isAtEndOfScrolling, setIsAtEndOfScrolling] = useState(false);
-
+    const flatListRef = useRef();
     
     useEffect(() => {
-        return async () => {
-              await getAllTweets();
-        };
+        
+        getAllTweets();
+    
     }, [page]);
 
+    useEffect(() => {
+        if(route.params?.newTweetAdded){
+            getAllTweetsRefreshed();
+            flatListRef.current.scrollToOffset({
+                offset: 0,
+        });
+    }
+        
+    }, [route.params?.newTweetAdded]);
 
-    async function getAllTweets(){
-        await axios.get(`api/tweets?page=${page}`)
+
+     function getAllTweets(){
+
+        axios.get(`tweets?page=${page}`)
             .then(response => {
               if(page ===1){
                   setData(response.data.data);
@@ -40,6 +51,24 @@ export default function RenderTweets({HeaderComponent,navigation}){
                 setIsRefreshing(false);
         })
     }
+    
+    function getAllTweetsRefreshed(){
+        setPage(1);
+        setIsAtEndOfScrolling(false);
+        setIsRefreshing(false);
+
+        axios.get(`tweets`)
+           .then(response => {
+             setData(response.data.data);
+             setIsLoading(false);
+             setIsRefreshing(false);
+           }).catch(error => {
+               console.log(error);
+               setIsLoading(false);
+               setIsRefreshing(false);
+       })
+   }
+
     function handleRefresh(){
       setPage(1);
       setIsAtEndOfScrolling(false);
@@ -112,6 +141,7 @@ export default function RenderTweets({HeaderComponent,navigation}){
         :
         (
           <FlatList
+                ref={flatListRef}
                 data={data}
                 renderItem={renderTweet}
                 keyExtractor={item => item.id}
