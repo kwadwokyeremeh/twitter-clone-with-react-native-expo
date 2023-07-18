@@ -1,15 +1,44 @@
-import React from 'react';
-import {View, Text, Image, TouchableOpacity, StyleSheet,Linking,SafeAreaView} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, Image, TouchableOpacity, StyleSheet,Linking,SafeAreaView, ActivityIndicator} from 'react-native';
 import { EvilIcons, AntDesign } from '@expo/vector-icons';
 import RenderTweets from "../components/RenderTweets";
 import styleSheet from '../css/styleSheet';
+import axios from '../axios';
+import {format} from 'date-fns';
 
 export default function ProfileScreen({route, navigation}){
+const [profile, setProfile] = useState(null);
+const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(()=>{
+
+        getUserProfile();
+    },[])
+
+    function getUserProfile() {
+        axios.get(`profile/${route.params.userId}`)
+            .then(response=>{
+                setProfile(response.data);
+                setIsLoading(false);
+            })
+            .catch(error=>{
+                console.log(error);
+                setIsLoading(false);
+            })
+    }
+
     function goToNewTweet(){
         navigation.navigate('New Tweet Screen');
     }
 
+
     const ProfileHeader = () => (
+    <>
+        {isLoading ? 
+            (<ActivityIndicator style={{marginTop:8}} size="large" color="gray"/>)
+            :
+            (
+            
         <View style={[styleSheet.container]}>
             <Image 
                     style={styleSheet.backgroundImage}
@@ -20,37 +49,37 @@ export default function ProfileScreen({route, navigation}){
             <Image 
                     style={styles.profileAvatar}
                     source={{
-                        uri: 'https://reactnative.dev/img/tiny_logo.png'
+                        uri: profile.avatar
                     }} />
                 <TouchableOpacity style={styles.followButton}>
                         <Text style={styles.followButtonLabel}>Follow</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.nameContainer}>
-                <Text style={styles.profileName}>Kwadwo Kyeremeh</Text>
-                <Text style={styles.profileHandle}>@kwadwokyeremeh</Text>
+                <Text style={styles.profileName}>{profile.name}</Text>
+                <Text style={styles.profileHandle}>@{profile.username}</Text>
             </View>
             <View style={styles.profileContainer}>
                 <Text style={styles.profileContainerText}>
-                    CEO, Team Lead,
+                    {profile.profile}
                 </Text>
             </View>
 
             <View style={styles.locationContainer}>
                 <EvilIcons name="location" size={24} color='gray'/>
-                <Text style={styles.textColor}>Kumasi, Ghana</Text>
+                <Text style={styles.textColor}>{profile.location}</Text>
             </View>
             <View style={styles.linkContainer}>
                 <TouchableOpacity
                     style={styleSheet.flexRow}
-                    onPress={()=>Linking.openURL('https://google.com')}
+                    onPress={()=>Linking.openURL(profile.link)}
                     >
                         <EvilIcons name="link" size={24} color="gray"/>
-                        <Text style={styles.linkColor}>google.com</Text>
+                        <Text style={styles.linkColor}>{profile.linkText}</Text>
                     </TouchableOpacity>
                     <View style={[styleSheet.flexRow, styleSheet.ml4]}>
                         <EvilIcons name="calendar" size={24} color="gray"/>
-                        <Text style={styles.textColor}>Joined March 2009</Text>
+                        <Text style={styles.textColor}>Joined {format(new Date(profile.created_at),'MMM yyyy')}</Text>
                     </View>
             </View>
 
@@ -65,12 +94,14 @@ export default function ProfileScreen({route, navigation}){
                 </View>
             </View>
          </View>
+        )}
+    </>
     );
 
 
     return (
         <SafeAreaView style={styleSheet.container}>
-            <RenderTweets HeaderComponent={ProfileHeader} route={route} navigation={navigation}/>
+            <RenderTweets HeaderComponent={ProfileHeader} route={route} navigation={navigation} uri={`profile/${route.params.userId}/tweets`}/>
             <TouchableOpacity
                 style={styleSheet.floatingButton}
                 onPress={()=> goToNewTweet()}>

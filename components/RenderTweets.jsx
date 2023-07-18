@@ -5,7 +5,7 @@ import styles from '../css/styleSheet';
 import axios from '../axios'
 import {formatDistanceToNowStrict} from 'date-fns'
 
-export default function RenderTweets({HeaderComponent, route, navigation}){
+export default function RenderTweets({HeaderComponent, route, navigation, uri}){
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -15,13 +15,13 @@ export default function RenderTweets({HeaderComponent, route, navigation}){
     
     useEffect(() => {
         
-        getAllTweets();
+        getAllTweets(uri);
     
     }, [page]);
 
     useEffect(() => {
         if(route.params?.newTweetAdded){
-            getAllTweetsRefreshed();
+            getAllTweetsRefreshed(uri);
             flatListRef.current.scrollToOffset({
                 offset: 0,
         });
@@ -30,9 +30,9 @@ export default function RenderTweets({HeaderComponent, route, navigation}){
     }, [route.params?.newTweetAdded]);
 
 
-     function getAllTweets(){
+     function getAllTweets(url){
 
-        axios.get(`tweets?page=${page}`)
+        axios.get(`${url}?page=${page}`)
             .then(response => {
               if(page ===1){
                   setData(response.data.data);
@@ -52,12 +52,12 @@ export default function RenderTweets({HeaderComponent, route, navigation}){
         })
     }
     
-    function getAllTweetsRefreshed(){
+    function getAllTweetsRefreshed(url){
         setPage(1);
         setIsAtEndOfScrolling(false);
         setIsRefreshing(false);
 
-        axios.get(`tweets`)
+        axios.get(`${url}`)
            .then(response => {
              setData(response.data.data);
              setIsLoading(false);
@@ -73,15 +73,17 @@ export default function RenderTweets({HeaderComponent, route, navigation}){
       setPage(1);
       setIsAtEndOfScrolling(false);
       setIsRefreshing(true);
-      getAllTweets();
+      getAllTweets(uri);
     }
 
     function handleEnd(){
         setPage(page +1);
     }
 
-    function goToProfile(){
-        navigation.navigate('Profile Screen');
+    function goToProfile(userId){
+        navigation.navigate('Profile Screen',{
+            userId: userId,
+        });
     }
 
     function goToSingleTweet(tweetId){
@@ -90,12 +92,9 @@ export default function RenderTweets({HeaderComponent, route, navigation}){
         });
     }
 
-    function goToNewTweet(){
-        navigation.navigate('New Tweet Screen');
-    }
     const renderTweet = ({item:tweet}) => (
         <View style={styles.tweetContainer}>
-            <TouchableOpacity onPress={()=>{goToProfile()}}>
+            <TouchableOpacity onPress={()=>{goToProfile(tweet.user.id)}}>
                 <Image 
                     style={styles.avatar}
                     source={{
@@ -103,7 +102,7 @@ export default function RenderTweets({HeaderComponent, route, navigation}){
                     }} />
             </TouchableOpacity>
             <View style={{flex:1}}>
-                <TouchableOpacity  onPress={()=>{goToProfile()}} style={styles.flexRow}>
+                <TouchableOpacity  onPress={()=>{goToProfile(tweet.user.id)}} style={styles.flexRow}>
                     <Text numberOfLines={1} style={styles.username}>{tweet.user.name}</Text>
                     <Text numberOfLines={1} style={styles.userHandle}>@{tweet.user.username}</Text>
                     <Text>&middot;</Text>

@@ -9,7 +9,7 @@ export default function HomeScreen({route,navigation}){
     }
     return (
         <SafeAreaView style={styles.container}>
-            <RenderTweets HeaderComponent={null} route={route} navigation={navigation}/>
+            <RenderTweets HeaderComponent={null} route={route} navigation={navigation} uri={`tweets`}/>
             <TouchableOpacity
                 style={styles.floatingButton}
                 onPress={()=> goToNewTweet()}>
