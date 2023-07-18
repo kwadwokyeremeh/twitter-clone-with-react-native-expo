@@ -5,6 +5,11 @@ export default styles = StyleSheet.create({
         flex:1,
          backgroundColor: 'white',
     },
+    centerItems:{
+        flex:1,
+        alignItems:'center',
+        justifyContent:'center'
+    },
     tweetContainer: {
         flexDirection:'row',
         paddingHorizontal:12,
