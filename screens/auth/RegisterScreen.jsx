@@ -76,7 +76,7 @@ export default function RegisterScreen({navigation}){
                 </TouchableOpacity>
 
 
-                <TouchableOpacity onPress={()=> navigation.navigate('Register Screen')}
+                <TouchableOpacity onPress={()=> navigation.navigate('Login Screen')}
                                   style={styles.authLinkContainer}>
                     <Text style={styles.authText}>Already have account,</Text><Text style={styles.authTextLink}> Login</Text>
                 </TouchableOpacity>

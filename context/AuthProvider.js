@@ -45,13 +45,14 @@ export const AuthProvider = ({children}) => {
                     })
 
             },
-            register: (name, username, email, password, confirmPassword) => {
+            register: (name, userName, email, password, confirmPassword) => {
                 setIsLoading(true);
                 axios.post('register', {
                     name:name,
                     email: email,
+                    userName: userName,
                     password: password,
-                    confirmPassword: confirmPassword,
+                    password_confirmation: confirmPassword,
                     device_name: Platform.OS === 'ios' ? 'ios' : 'android'
                 })
                     .then(response => {
