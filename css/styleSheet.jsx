@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 
+let styles;
 export default styles = StyleSheet.create({
     container: { 
         flex:1,
@@ -97,6 +98,12 @@ export default styles = StyleSheet.create({
     ml4: {
         marginLeft: 16
     },
+    mt4: {
+        marginTop: 16
+    },
+    mt5: {
+        marginTop:22
+    },
     floatingButton: {
         width:60,
         height:60,
@@ -113,6 +120,43 @@ export default styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingVertical: 12,
         paddingHorizontal: 10
+    },
+    authContainer: {
+        flex: 1,
+        backgroundColor: '#1d9bf1',
+        alignItems: 'center'
+    },
+    logo: {
+        width:100,
+        height:120
+    },
+    inputBox:{
+        backgroundColor:'white',
+        borderRadius:5,
+        padding:10
+    },
+    authButton: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        backgroundColor: '#0084b3',
+        padding:12,
+        borderRadius:5
+    },
+    authButtonText:{
+        color:'white'
+    },
+    authText: {
+        fontSize:12,
+    },
+    authTextLink: {
+        fontSize: 12,
+        color: 'white',
+        textDecorationLine: 'underline'
+    },
+    authLinkContainer:{
+        flexDirection:'row',
+        justifyContent: 'center',
+        marginTop:12
     }
 })
 

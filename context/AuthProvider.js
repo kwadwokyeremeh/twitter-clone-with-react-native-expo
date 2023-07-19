@@ -45,6 +45,36 @@ export const AuthProvider = ({children}) => {
                     })
 
             },
+            register: (name, username, email, password, confirmPassword) => {
+                setIsLoading(true);
+                axios.post('register', {
+                    name:name,
+                    email: email,
+                    password: password,
+                    confirmPassword: confirmPassword,
+                    device_name: Platform.OS === 'ios' ? 'ios' : 'android'
+                })
+                    .then(response => {
+                        const userResponse = {
+                            token: response.data.token,
+                            id: response.data.id,
+                            name: response.data.name,
+                            username: response.data.username,
+                            avatar: response.data.avatar,
+                            email: response.data.email,
+                        }
+                        setUser(userResponse);
+                        setError(null);
+                        secureSave('user', JSON.stringify(userResponse));
+                        setIsLoading(false);
+                    })
+                    .catch(error => {
+                        console.log(error.response);
+                        setError(error.response.data.message);
+                        setIsLoading(false);
+                    })
+
+            },
             logout:()=>{
                 setIsLoading(true);
                 axios.defaults.headers.common['Authorization'] = `Bearer ${user.token}`;
@@ -59,6 +89,10 @@ export const AuthProvider = ({children}) => {
                         console.log(error.response);
                         setError(error.response.data.message);
                         setIsLoading(false);
+                    })
+                    .finally(error => {
+                        setUser(null);
+                        secureDelete('user');
                     })
                 setUser(null);
 

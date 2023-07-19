@@ -103,7 +103,7 @@ export default function Root() {
     getValueFor(user)
       .then(userString => {
         if(userString){
-          setUser('Kwadwo');
+          setUser(JSON.parse(userString));
           setIsLoading(false);
         }
       })
