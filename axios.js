@@ -9,4 +9,13 @@ const axios = Axios.create({
     withCredentials: true,
 })
 
+export const axiosWeb = Axios.create({
+    baseURL: 'https://marginally-sunny-mongrel.ngrok-free.app/',
+    //baseURL: 'https://kwadwo-kyeremeh.eu-1.sharedwithexpose.com',
+    headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+    },
+    withCredentials: true,
+})
+
 export default axios

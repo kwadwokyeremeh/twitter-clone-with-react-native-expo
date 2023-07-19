@@ -18,6 +18,7 @@ import { AuthContext } from './context/AuthProvider';
 import LoginScreen from './screens/auth/LoginScreen';
 import RegisterScreen from './screens/auth/RegisterScreen';
 import ForgotPasswordScreen from './screens/auth/ForgotPassword';
+import {secureSave, secureDelete,getValueFor } from './components/SecureStore'
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -99,7 +100,17 @@ export default function Root() {
   const {user, setUser} = useContext(AuthContext);
 
   useEffect(()=>{
-console.log(user);
+    getValueFor(user)
+      .then(userString => {
+        if(userString){
+          setUser('Kwadwo');
+          setIsLoading(false);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        setIsLoading(false);
+      })
   },[]);
 
   return (
