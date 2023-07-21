@@ -22,14 +22,14 @@ export default function RenderTweets({HeaderComponent, route, navigation, uri}){
     }, [page]);
 
     useEffect(() => {
-        if(route.params?.newTweetAdded){
+        if(route.params?.newTweetAdded || route.params?.tweetDeleted){
             getAllTweetsRefreshed(uri);
             flatListRef.current.scrollToOffset({
                 offset: 0,
         });
     }
         
-    }, [route.params?.newTweetAdded]);
+    }, [route.params?.newTweetAdded,route.params?.tweetDeleted]);
 
 
      function getAllTweets(url){
