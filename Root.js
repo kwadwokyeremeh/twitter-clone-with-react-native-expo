@@ -18,7 +18,7 @@ import { AuthContext } from './context/AuthProvider';
 import LoginScreen from './screens/auth/LoginScreen';
 import RegisterScreen from './screens/auth/RegisterScreen';
 import ForgotPasswordScreen from './screens/auth/ForgotPassword';
-import {secureSave, secureDelete,getValueFor } from './components/SecureStore'
+import * as SecureStore from './components/SecureStore'
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -100,7 +100,7 @@ export default function Root() {
   const {user, setUser} = useContext(AuthContext);
 
   useEffect(()=>{
-    getValueFor(user)
+    SecureStore.getValueFor(user)
       .then(userString => {
         if(userString){
           setUser(JSON.parse(userString));

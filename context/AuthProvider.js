@@ -1,5 +1,5 @@
 import React, {useState, createContext} from 'react'
-import {secureSave, secureDelete } from '../components/SecureStore';
+import * as SecureStore from '../components/SecureStore';
 import axios from '../axios';
 import {Platform} from "react-native";
 
@@ -27,15 +27,15 @@ export const AuthProvider = ({children}) => {
                     .then(response => {
                         const userResponse = {
                             token: response.data.token,
-                            id: response.data.id,
-                            name: response.data.name,
-                            username: response.data.username,
-                            avatar: response.data.avatar,
-                            email: response.data.email,
+                            id: response.data.user.id,
+                            name: response.data.user.name,
+                            username: response.data.user.username,
+                            avatar: response.data.user.avatar,
+                            email: response.data.user.email,
                         }
                         setUser(userResponse);
                         setError(null);
-                        secureSave('user', JSON.stringify(userResponse));
+                        SecureStore.secureSave('user', JSON.stringify(userResponse));
                         setIsLoading(false);
                     })
                     .catch(error => {
@@ -58,15 +58,15 @@ export const AuthProvider = ({children}) => {
                     .then(response => {
                         const userResponse = {
                             token: response.data.token,
-                            id: response.data.id,
-                            name: response.data.name,
-                            username: response.data.username,
-                            avatar: response.data.avatar,
-                            email: response.data.email,
+                            id: response.data.user.id,
+                            name: response.data.user.name,
+                            username: response.data.user.username,
+                            avatar: response.data.user.avatar,
+                            email: response.data.user.email,
                         }
                         setUser(userResponse);
                         setError(null);
-                        secureSave('user', JSON.stringify(userResponse));
+                        SecureStore.secureSave('user', JSON.stringify(userResponse));
                         setIsLoading(false);
                     })
                     .catch(error => {
@@ -81,7 +81,7 @@ export const AuthProvider = ({children}) => {
                 axios.defaults.headers.common['Authorization'] = `Bearer ${user.token}`;
                 axios.delete('logout')
                     .then(response => {
-                        secureDelete('user');
+                        SecureStore.secureDelete('user');
                         setUser(null);
                         setError(null);
                         setIsLoading(false);
@@ -93,7 +93,7 @@ export const AuthProvider = ({children}) => {
                     })
                     .finally(error => {
                         setUser(null);
-                        secureDelete('user');
+                        SecureStore.secureDelete('user');
                     })
                 setUser(null);
 

@@ -1,19 +1,23 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {View, Text, Image, TouchableOpacity, StyleSheet,Linking,SafeAreaView, ActivityIndicator} from 'react-native';
 import { EvilIcons, AntDesign } from '@expo/vector-icons';
 import RenderTweetsList from "../components/RenderTweets";
 import styleSheet from '../css/styleSheet';
 import axios from '../axios';
 import {format} from 'date-fns';
+import { AuthContext } from '../context/AuthProvider';
 
-export default function ProfileScreen({route, navigation, user}){
+export default function ProfileScreen({route, navigation,user}){
 const [profile, setProfile] = useState(null);
 const [isLoading, setIsLoading] = useState(true);
-let userId = user ? user.id :  route.params.userId;
+const [isFollowing, setIsFollowing] = useState(false);
+const {user:userFromContext} = useContext(AuthContext);
+let userId = user ? user.id : route.params.userId;
 
     useEffect(()=>{
 
         getUserProfile();
+        getIsFollowing();
     },[])
 
     function getUserProfile() {
@@ -28,11 +32,47 @@ let userId = user ? user.id :  route.params.userId;
             })
     }
 
+    function getIsFollowing() {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${userFromContext.token}`;
+        axios.get(`is_following/${userId}`)
+            .then(response=>{
+                setIsFollowing(response.data);
+            })
+            .catch(error=>{
+                console.log(error);
+            })
+    }
+
     function goToNewTweet(){
         navigation.navigate('New Tweet Screen');
     }
 
+    function followUser(userId){
+        axios.defaults.headers.common['Authorization'] = `Bearer ${userFromContext.token}`;
+        axios.post(`follow/${userId}`)
+            .then(response=>{
+                getIsFollowing();
+            })
+            .catch(error=>{
+                console.log(error);
+            })
+    }
 
+    function unfollowUser(userId){
+        axios.defaults.headers.common['Authorization'] = `Bearer ${userFromContext.token}`;
+        axios.delete(`unfollow/${userId}`)
+            .then(response=>{
+                getIsFollowing();
+            })
+            .catch(error=>{
+                console.log(error);
+            })
+    }
+
+
+    function showProfile(userId){
+
+    }
     const ProfileHeader = () => (
     <>
         {isLoading ? 
@@ -52,9 +92,22 @@ let userId = user ? user.id :  route.params.userId;
                     source={{
                         uri: profile.avatar
                     }} />
-                <TouchableOpacity style={styles.followButton}>
-                        <Text style={styles.followButtonLabel}>Follow</Text>
-                </TouchableOpacity>
+                    {route.params.userId === userFromContext.id ?(
+                        <TouchableOpacity 
+                            style={styles.followButton}
+                            onPress={()=> showProfile(userId)}>
+                                <Text style={styles.followButtonLabel}>Profile</Text>
+                        </TouchableOpacity>
+                    ): (
+                        <TouchableOpacity 
+                            style={styles.followButton}
+                            onPress={()=> {isFollowing? unfollowUser(userId) : followUser(userId)}}
+                            onPressIn={()=> {isFollowing? 'Unfollow':''}}>
+                                <Text style={styles.followButtonLabel}>{isFollowing ? 'Following':'Follow'}</Text>
+                        </TouchableOpacity>
+                    )
+                    }
+                
             </View>
             <View style={styles.nameContainer}>
                 <Text style={styles.profileName}>{profile.name}</Text>
