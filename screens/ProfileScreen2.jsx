@@ -1,14 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, Image, TouchableOpacity, StyleSheet,Linking,SafeAreaView, ActivityIndicator} from 'react-native';
 import { EvilIcons, AntDesign } from '@expo/vector-icons';
-import RenderTweets from "../components/RenderTweets";
+import RenderTweetsList from "../components/RenderTweets";
 import styleSheet from '../css/styleSheet';
 import axios from '../axios';
 import {format} from 'date-fns';
 
-export default function ProfileScreen({route, navigation}){
+export default function ProfileScreen({route, navigation, user}){
 const [profile, setProfile] = useState(null);
 const [isLoading, setIsLoading] = useState(true);
+let userId = user ? user.id :  route.params.userId;
 
     useEffect(()=>{
 
@@ -16,7 +17,7 @@ const [isLoading, setIsLoading] = useState(true);
     },[])
 
     function getUserProfile() {
-        axios.get(`profile/${route.params.userId}`)
+        axios.get(`profile/${userId}`)
             .then(response=>{
                 setProfile(response.data);
                 setIsLoading(false);
@@ -101,7 +102,7 @@ const [isLoading, setIsLoading] = useState(true);
 
     return (
         <SafeAreaView style={styleSheet.container}>
-            <RenderTweets HeaderComponent={ProfileHeader} route={route} navigation={navigation} uri={`profile/${route.params.userId}/tweets`}/>
+            <RenderTweetsList HeaderComponent={ProfileHeader} route={route} navigation={navigation} uri={`profile/${userId}/tweets`}/>
             <TouchableOpacity
                 style={styleSheet.floatingButton}
                 onPress={()=> goToNewTweet()}>

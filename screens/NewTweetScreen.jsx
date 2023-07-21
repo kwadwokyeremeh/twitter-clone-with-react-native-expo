@@ -1,18 +1,21 @@
 import { NavigationContainer } from '@react-navigation/native';
-import {React, useState} from 'react';
+import React,{ useContext, useState} from 'react';
 import {View, Text, Button, StyleSheet, TouchableOpacity, Image, TextInput, ActivityIndicator} from 'react-native';
 import styleSheet from '../css/styleSheet';
 import axios from '../axios';
+import {AuthContext} from "../context/AuthProvider";
 
 export default function NewTweetScreen({navigation}){
 const [tweet, setTweet] = useState('');
 const [isLoading, setIsLoading] = useState(false);
+const {user} = useContext(AuthContext);
 
 function postTweet(){
     if(tweet.length < 1){
         return;
-    };
+    }
     setIsLoading(true);
+    axios.defaults.headers.common['Authorization'] = `Bearer ${user.token}`;
     axios.post(`tweets`,{
         body: tweet
     })
@@ -50,7 +53,7 @@ function postTweet(){
                 <Image
                     style={styleSheet.avatar}
                     source={{
-                        uri: "https://reactnative.dev/img/tiny_logo.png"
+                        uri: user.avatar
                     }}/>
                 <TextInput
                 style={styles.input} 

@@ -1,9 +1,10 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import {View, SafeAreaView, FlatList, Text, Button, StyleSheet, Image, TouchableOpacity, Platform, ActivityIndicator} from 'react-native';
 import { EvilIcons, AntDesign } from '@expo/vector-icons';
 import styles from '../css/styleSheet';
 import axios from '../axios'
 import {formatDistanceToNowStrict} from 'date-fns'
+import {AuthContext} from "../context/AuthProvider";
 
 export default function RenderTweets({HeaderComponent, route, navigation, uri}){
     const [data, setData] = useState([]);
@@ -12,7 +13,8 @@ export default function RenderTweets({HeaderComponent, route, navigation, uri}){
     const [page, setPage] = useState(1);
     const [isAtEndOfScrolling, setIsAtEndOfScrolling] = useState(false);
     const flatListRef = useRef();
-    
+    const {user} = useContext(AuthContext);
+
     useEffect(() => {
         
         getAllTweets(uri);
@@ -31,7 +33,9 @@ export default function RenderTweets({HeaderComponent, route, navigation, uri}){
 
 
      function getAllTweets(url){
-
+        if(url != 'all/tweets'){
+            axios.defaults.headers.common['Authorization'] = `Bearer ${user.token}`;
+          }
         axios.get(`${url}?page=${page}`)
             .then(response => {
               if(page ===1){
@@ -57,7 +61,10 @@ export default function RenderTweets({HeaderComponent, route, navigation, uri}){
         setIsAtEndOfScrolling(false);
         setIsRefreshing(false);
 
-        axios.get(`${url}`)
+        if(url != 'all/tweets'){
+          axios.defaults.headers.common['Authorization'] = `Bearer ${user.token}`;
+        }
+         axios.get(`${url}`)
            .then(response => {
              setData(response.data.data);
              setIsLoading(false);

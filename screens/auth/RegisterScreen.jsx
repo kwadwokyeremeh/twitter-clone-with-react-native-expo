@@ -13,7 +13,7 @@ export default function RegisterScreen({navigation}){
     const { error, isLoading, register } = useContext(AuthContext);
     return (
         <View style={[styles.authContainer,styles.centerItems]}>
-            <View style={{marginTop: 130, width: 260}}>
+            <View style={{marginTop: 0, width: 260}}>
                 <View style={{alignItems:'center'}}>
                     <Image source={require('../../assets/favicon.png')} style={styles.logo}/>
                 </View>

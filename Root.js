@@ -123,7 +123,9 @@ export default function Root() {
       }}>
         <Drawer.Screen  name="Home" component={HomeStackNavigator} />
         <Drawer.Screen name="Settings" component={SettingsScreen} />
-        <Drawer.Screen name="Profile" component={ProfileScreen} />
+        <Drawer.Screen name="Profile">
+          {(user)=> <ProfileScreen{...user}/>}
+          </Drawer.Screen>  
       </Drawer.Navigator>
     </NavigationContainer>
   )

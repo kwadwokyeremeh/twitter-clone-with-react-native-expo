@@ -2,6 +2,7 @@ import React from 'react';
 import {SafeAreaView, TouchableOpacity} from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import RenderTweets from "../components/RenderTweets";
+import styles from '../css/styleSheet';
 
 export default function HomeScreen({route,navigation}){
     function goToNewTweet(){
