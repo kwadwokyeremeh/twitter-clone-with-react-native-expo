@@ -20,6 +20,8 @@ import RegisterScreen from './screens/auth/RegisterScreen';
 import ForgotPasswordScreen from './screens/auth/ForgotPassword';
 import * as SecureStore from './components/SecureStore'
 
+
+
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -95,6 +97,7 @@ const AuthStackNavigator = () => {
       </Stack.Navigator>
   )
 }
+
 export default function Root() {
   const [isLoading,setIsLoading] = useState(true);
   const {user, setUser} = useContext(AuthContext);
